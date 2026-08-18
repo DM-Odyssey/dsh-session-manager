@@ -65,12 +65,20 @@ pnpm build:lib:client   # 客户端 bundle
 
 ## 安装（一键，bundle 形态）
 
-本仓库根目录本身就是一个 **bundle 包**（`@dream12347/dsh-session-manager`），带 `dsh.bundle.patch`
-声明与自带的 `cordis.patch.yml`。因此可用 dsh 的插件命令一键安装：
+本仓库根目录本身就是一个 **bundle 包**（`@dm-odyssey/dsh-session-manager`），带 `dsh.bundle.patch`
+声明与自带的 `cordis.patch.yml`。因此可用 dsh 的插件命令一键安装。
 
 **从 GitHub**
 ```bash
-dsh plugin --profile web add 'github:dream12347/dsh-session-manager#v0.1.8'
+# 已打 tag（如 v0.1.0）后安装：
+dsh plugin --profile web add 'git@github.com:DM-Odyssey/dsh-session-manager.git#v0.1.0'
+# 或用 HTTPS 地址（需 Personal Access Token）：
+# dsh plugin --profile web add 'https://github.com/DM-Odyssey/dsh-session-manager.git#v0.1.0'
+```
+
+**从内网 Gitea**
+```bash
+dsh plugin --profile web add 'ssh://gitea@192.168.0.22:2222/dpzhang/dsh-session-manager.git#v0.1.0'
 ```
 
 **从本地目录**
@@ -83,7 +91,7 @@ dsh plugin --profile web add /absolute/path/to/dsh-session-manager
 作为一层补丁挂载 `session-manager` 与 `client-ui-session-manager` 两行。无需手工 patch/symlink。
 
 > 发布说明：bundle 的 `dependencies` 以 `file:` 指向本地两个子包，适合本地安装/联调。
-> 发布到 GitHub/npm 时，应把这两个 `file:` 依赖改成已发布的版本 spec（见“推送 GitHub”）。
+> 发布到远端（GitHub/Gitea）前，应把这两个 `file:` 依赖改成已发布的版本 spec（见“推送 GitHub”）。
 > 子包 `@deepseek-ai/dsh-session-manager`、`@deepseek-ai/dsh-client-ui-session-manager` 对
 > `@deepseek-ai/*` 与 `react` 的依赖均为 peer（`*`），由 dsh 部署环境提供，无需随包发布。
 
@@ -97,7 +105,7 @@ dsh plugin --profile web add /absolute/path/to/dsh-session-manager
 ### 回滚
 
 ```bash
-dsh plugin --profile web remove @dream12347/dsh-session-manager   # 或 pnpm remove
+dsh plugin --profile web remove @dm-odyssey/dsh-session-manager   # 或 pnpm remove
 # 或：编辑 ~/.dsh/profiles/web/package.json，把该 bundle 从 dsh.profile.bundles 移出并删除依赖
 rm -f ~/.dsh/profiles/web/cordis.patch.yml
 # 重启 dsh web
@@ -130,18 +138,34 @@ rm -rf ~/.local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-
 # 重启 dsh web
 ```
 
-## 推送 GitHub
+## 推送（GitHub 与内网 Gitea 同时保留）
+
+本仓库配置了两个远端：
 
 ```bash
-cd ~/dsh-session-manager
-git init -b main
-git add .
-git commit -m "feat: deployment-level dsh session manager"
-git remote add origin git@github.com:<你>/<repo>.git
-git push -u origin main
+git remote -v
+# origin   ssh://gitea@192.168.0.22:2222/dpzhang/dsh-session-manager.git   (内网 Gitea)
+# github   git@github.com:DM-Odyssey/dsh-session-manager.git               (GitHub)
 ```
 
-建议提交 `dist/`（构建产物）便于直接安装；`node_modules/` 见 `.gitignore`。
+推送代码到两个远端：
+
+```bash
+git push origin main    # 内网 Gitea
+git push github main    # GitHub
+```
+
+打 tag 并推送到两个远端：
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+git push github v0.1.0
+```
+
+> 首次推 GitHub 前：先在 github.com 建仓库 `dsh-session-manager`，并把本机 SSH 公钥
+> （`~/.ssh/id_ed25519.pub`）加到 GitHub → Settings → SSH and GPG keys。
+> 验证：`ssh -T git@github.com` 应回 `Hi <你>! ...`。
 
 ## 许可
 

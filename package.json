@@ -1,6 +1,6 @@
 {
-  "name": "@dream12347/dsh-session-manager",
-  "version": "0.1.8",
+  "name": "@dm-odyssey/dsh-session-manager",
+  "version": "0.1.0",
   "description": "bundle: deploy the dsh session manager (host service + settings page) into a dsh web profile.",
   "type": "module",
   "license": "MIT",
