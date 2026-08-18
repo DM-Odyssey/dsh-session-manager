@@ -1,0 +1,1 @@
+{"version":3,"file":"typert.remote-client.d.ts","names":["archive","deleteAllArchived","deleteSession","deleteSessions","list","restore","restoreMany"],"sources":["../src/index.ts"],"sourcesContent":[null],"mappings":";;;;;;;;;IAgWQA,O;IAgDAC,iB;IApCAC,a;IAcAC,c;IAhIAC,I;IAyCAC,O;IAwBAC,W;;;IAqCAN,wB;IAgDAC,kC;IApCAC,8B;IAcAC,+B;IAhIAC,qB;IAyCAC,wB;IAwBAC,4B","ignoreList":[]}

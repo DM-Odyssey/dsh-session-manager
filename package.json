@@ -1,0 +1,16 @@
+{
+  "name": "@dream12347/dsh-session-manager",
+  "version": "0.1.8",
+  "description": "bundle: deploy the dsh session manager (host service + settings page) into a dsh web profile.",
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "@deepseek-ai/dsh-session-manager": "file:./packages/session-manager",
+    "@deepseek-ai/dsh-client-ui-session-manager": "file:./packages/client-ui-session-manager"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
