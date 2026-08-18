@@ -63,37 +63,52 @@ pnpm build:lib:client   # 客户端 bundle
 改写为 zod 具名导入，配合 tsdown 的 `zod` ESM alias，避免本仓库 rolldown 把 zod 留成外部 `require("zod")`
 导致模块表缺失）。构建产物在 `dist/`（本项目已含一份当前构建结果）。
 
-## 安装（一键，bundle 形态）
+## 安装（拉取下来安装）
 
-本仓库根目录本身就是一个 **bundle 包**（`@dm-odyssey/dsh-session-manager`），带 `dsh.bundle.patch`
-声明与自带的 `cordis.patch.yml`。因此可用 dsh 的插件命令一键安装。
+当前插件的 Host/Client 依赖 dsh 的运行时与构建环境，且 Remote 跨端挂载依赖平台共享包
+`dsh-api-remotes`（子包尚未发布到 npm registry），因此**不支持“从远端一条 `dsh plugin add`
+命令直接装上并立即可用”**。正确做法是：先把仓库**拉取（clone）到本地**，再从本地目录安装
+（此路径已验证可用）。
+
+### 1. 拉取代码
 
 **从 GitHub**
 ```bash
-# 已打 tag（如 v0.1.0）后安装：
-dsh plugin --profile web add 'git@github.com:DM-Odyssey/dsh-session-manager.git#v0.1.0'
-# 或用 HTTPS 地址（需 Personal Access Token）：
-# dsh plugin --profile web add 'https://github.com/DM-Odyssey/dsh-session-manager.git#v0.1.0'
+git clone git@github.com:DM-Odyssey/dsh-session-manager.git
+cd dsh-session-manager
 ```
 
 **从内网 Gitea**
 ```bash
-dsh plugin --profile web add 'ssh://gitea@192.168.0.22:2222/dpzhang/dsh-session-manager.git#v0.1.0'
+git clone ssh://gitea@192.168.0.22:2222/dpzhang/dsh-session-manager.git
+cd dsh-session-manager
 ```
 
-**从本地目录**
+### 2. 本地目录安装到 profile
+
+在 clone 出的项目根目录（`package.json` 是一个带 `dsh.bundle.patch` 的 bundle 包）执行：
+
 ```bash
-dsh plugin --profile web add /absolute/path/to/dsh-session-manager
+dsh plugin --profile web add "$PWD"
+# 等价于：dsh plugin --profile web add /absolute/path/to/dsh-session-manager
 ```
 
-`dsh plugin ... add` 会在 profile 里执行 `pnpm add`（把 bundle 及其两个子包装进 node_modules），
-并自动把识别为 bundle 的包加入 `dsh.profile.bundles`；启动时 bundle 自带的 `cordis.patch.yml`
+`dsh plugin ... add` 会在 profile 里 `pnpm add` 这个 bundle 及其两个子包
+（`packages/session-manager`、`packages/client-ui-session-manager`，以 `file:` 本地依赖解析），
+并把识别为 bundle 的包自动加入 `dsh.profile.bundles`；启动时 bundle 自带的 `cordis.patch.yml`
 作为一层补丁挂载 `session-manager` 与 `client-ui-session-manager` 两行。无需手工 patch/symlink。
 
-> 发布说明：bundle 的 `dependencies` 以 `file:` 指向本地两个子包，适合本地安装/联调。
-> 发布到远端（GitHub/Gitea）前，应把这两个 `file:` 依赖改成已发布的版本 spec（见“推送 GitHub”）。
-> 子包 `@deepseek-ai/dsh-session-manager`、`@deepseek-ai/dsh-client-ui-session-manager` 对
-> `@deepseek-ai/*` 与 `react` 的依赖均为 peer（`*`），由 dsh 部署环境提供，无需随包发布。
+### 3. 重启
+
+```bash
+npx @deepseek-ai/dsh web
+```
+
+重启后打开 **设置 → 会话管理** 即可使用。
+
+> 备注：若子包后续发布到 npm/GitHub Packages，可把 bundle 的 `dependencies` 从 `file:` 改为
+> registry 版本，并调整 Remote 挂载方（当前依赖 `dsh-api-remotes`），届时才能真正“远程一下装”。
+> 在此之前请使用“拉取下来安装”。
 
 ### 手工方式（备选，与该 bundle 等价）
 
