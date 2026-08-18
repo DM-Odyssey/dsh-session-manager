@@ -78,12 +78,6 @@ git clone git@github.com:DM-Odyssey/dsh-session-manager.git
 cd dsh-session-manager
 ```
 
-**从内网 Gitea**
-```bash
-git clone ssh://gitea@192.168.0.22:2222/dpzhang/dsh-session-manager.git
-cd dsh-session-manager
-```
-
 ### 2. 本地目录安装到 profile
 
 在 clone 出的项目根目录（`package.json` 是一个带 `dsh.bundle.patch` 的 bundle 包）执行：
@@ -152,35 +146,6 @@ rm -rf ~/.local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-
        ~/.local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-client-ui-session-manager
 # 重启 dsh web
 ```
-
-## 推送（GitHub 与内网 Gitea 同时保留）
-
-本仓库配置了两个远端：
-
-```bash
-git remote -v
-# origin   ssh://gitea@192.168.0.22:2222/dpzhang/dsh-session-manager.git   (内网 Gitea)
-# github   git@github.com:DM-Odyssey/dsh-session-manager.git               (GitHub)
-```
-
-推送代码到两个远端：
-
-```bash
-git push origin main    # 内网 Gitea
-git push github main    # GitHub
-```
-
-打 tag 并推送到两个远端：
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-git push github v0.1.0
-```
-
-> 首次推 GitHub 前：先在 github.com 建仓库 `dsh-session-manager`，并把本机 SSH 公钥
-> （`~/.ssh/id_ed25519.pub`）加到 GitHub → Settings → SSH and GPG keys。
-> 验证：`ssh -T git@github.com` 应回 `Hi <你>! ...`。
 
 ## 许可
 
